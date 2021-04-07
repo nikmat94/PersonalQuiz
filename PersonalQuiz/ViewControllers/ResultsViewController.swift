@@ -13,33 +13,16 @@ class ResultsViewController: UIViewController {
     @IBOutlet var animalTypeLabel: UILabel!
     @IBOutlet var animalDescriptionLabel: UILabel!
     
-    var animalTypes: AnimalType!
-    var animalDescription = ""
+    @IBOutlet var barButtonItems: UINavigationItem!
     
-    var maxCount = 0
-    var maxCountName = ""
-    
-    var maxDefinitionCount = 0
-    var maxDefinitionName = ""
-    
-    var arrayOfDefinitions: [String: Int] = [:]
-    
-    
-    
-    
-    private var catCount = 0
-    private var dogCount = 0
-    private var turtleCount = 0
-    private var rabbitCount = 0
-    
-  
     var answersFinal:[Answer]! = []
     
-    var countOfTypes: [String: Int] = [:]
+    private var animalTypes: AnimalType!
+    
+    private var arrayOfDefinitions: [String: Int] = [:]
+    private var countOfTypesKeys:[String] = []
+    private var countOfTypes: [String: Int] = [:]
 
-    
-    
-    
     // 1. Передать сюда массив с ответами
     // 2. Определить наиболее часто встречающийся тип животного
     // 3. Отобразить результат в соответсвии с этим животным
@@ -47,41 +30,36 @@ class ResultsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        barButtonItems.setHidesBackButton(true, animated: false)
+        
         for answer in answersFinal {
-            countOfTypes[String(answer.type.rawValue)] = 0
+            countOfTypes[String(answer.type.rawValue)] = 0 // Заполняем ключи словарей
             arrayOfDefinitions[answer.type.definition] = 0
         }
-        let countOfTypesKeys = [String](countOfTypes.keys)
+        
+        countOfTypesKeys = [String](countOfTypes.keys)
+        
         for answer in answersFinal {
             if countOfTypesKeys.contains(String(answer.type.rawValue)) {
-                countOfTypes[String(answer.type.rawValue)]! += 1
+                countOfTypes[String(answer.type.rawValue)]! += 1 // Заполняем значения ключей исходя из количества совпадений
                 arrayOfDefinitions[answer.type.definition]! += 1
             }
         }
 
-        for (animalName, animalCount) in countOfTypes {
-            if animalCount >= maxCount {
-                maxCount = animalCount
-                maxCountName = animalName
-            }
-        }
-        
-        for (definitioneName, definitionCount) in arrayOfDefinitions {
-            if definitionCount >= maxDefinitionCount {
-                maxDefinitionCount = definitionCount
-                maxDefinitionName = definitioneName
-            }
-        }
-
-        animalTypeLabel.text = maxCountName
-        animalDescriptionLabel.text = maxDefinitionName
-        
-
-        
+        animalTypeLabel.text = searchingMaxCountInDictionary(in: countOfTypes)
+        animalDescriptionLabel.text = searchingMaxCountInDictionary(in: arrayOfDefinitions)
     }
     
-
-
-
+    private func searchingMaxCountInDictionary (in dictionaries:[String:Int]) -> String {
+        var maxCount = 0
+        var maxCountName = ""
+        for (name, count) in dictionaries {
+            if count >= maxCount {
+                maxCount = count
+                maxCountName = name
+            }
+        }
+        return maxCountName
+    }
 }
 
